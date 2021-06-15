@@ -26,42 +26,6 @@ type AppState =
     | { value: 'activeGame'; context: ActiveGame }
     | { value: 'gameEnd'; context: GameEnd }
 
-const appMachine = createMachine<AppContext, AppEvent, AppState>({
-    initial: 'init',
-    context: { size: 3 },
-    states: {
-        init: {
-            on: {
-                CHOOSESIZE: {
-                    actions: assign((_, event) => ({ size: event.size }))
-                },
-                STARTGAME: {
-                    target: 'preGame'
-                }
-            }
-        },
-        preGame: {
-            on: {
-                POPULATEBOARD: {
-                    target: 'activeGame',
-                    actions: assign((context, event) =>
-                        'size' in context
-                            ? {
-                                  grid: createGrid(
-                                      context.size,
-                                      event.position,
-                                      context.size
-                                  )
-                              }
-                            : context
-                    )
-                }
-            }
-        },
-        activeGame: {},
-        gameEnd: {}
-    }
-})
 /*
 Given a row index, a column index and a grid of cells,
 if the cell contains a bomb, leave it unchanged,
@@ -136,6 +100,44 @@ function createGrid(
     })
     return newGrid
 }
+
+const appMachine = createMachine<AppContext, AppEvent, AppState>({
+    initial: 'init',
+    context: { size: 3 },
+    strict: true,
+    states: {
+        init: {
+            on: {
+                CHOOSESIZE: {
+                    actions: assign((_, event) => ({ size: event.size }))
+                },
+                STARTGAME: {
+                    target: 'preGame'
+                }
+            }
+        },
+        preGame: {
+            on: {
+                POPULATEBOARD: {
+                    target: 'activeGame',
+                    actions: assign((context, event) =>
+                        'size' in context
+                            ? {
+                                  grid: createGrid(
+                                      context.size,
+                                      event.position,
+                                      context.size
+                                  )
+                              }
+                            : context
+                    )
+                }
+            }
+        },
+        activeGame: {},
+        gameEnd: {}
+    }
+})
 
 const InitScreen = () => (
     <div>
