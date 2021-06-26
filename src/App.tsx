@@ -6,6 +6,34 @@ const InitScreen = () => {
     const [current, send] = useMachine(appMachine)
     console.log(current.value)
 
+    const ButtonRow = (props: { size: number; rownumber: number }) => (
+        <div>
+            {[...Array(props.size)].map((_, colnumber) => (
+                <button
+                    onClick={(_) =>
+                        send({
+                            type: 'POPULATEBOARD',
+                            position: {
+                                row: props.rownumber,
+                                column: colnumber
+                            }
+                        })
+                    }
+                >
+                    {props.rownumber},{colnumber}
+                </button>
+            ))}
+        </div>
+    )
+
+    const Grid = (props: { size: number }) => (
+        <div>
+            {[...Array(props.size)].map((_, index) => (
+                <ButtonRow size={props.size} rownumber={index} />
+            ))}
+        </div>
+    )
+
     if (current.matches('init')) {
         return (
             <div>
@@ -28,23 +56,8 @@ const InitScreen = () => {
             </div>
         )
     } else if (current.matches('preGame')) {
-        const grid = Array.from(
-            Array(current.context.size),
-            () => new Array(current.context.size)
-        )
-        return (
-            <div>
-                <ul>
-                    {grid.map((subgrid, i) => (
-                        <ul key={i}>
-                            {subgrid.map((_, j) => (
-                                <li key={j}>test</li>
-                            ))}
-                        </ul>
-                    ))}
-                </ul>
-            </div>
-        )
+        const size = current.context.size
+        return <Grid size={size} />
     } else {
         return <div></div>
     }

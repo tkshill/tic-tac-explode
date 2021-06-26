@@ -18,12 +18,12 @@ function mineOrNumber(i: number, j: number, grid: Grid): Cell {
     // if you dont filter the values that cant exist in the grid, the browser will yell at you.
     const surrondingIndexes: Position[] = [
         { row: i + 1, column: j + 1 }, // top right
-        { row: i, column: j + 1 }, // right
+        { row: i + 0, column: j + 1 }, // right
         { row: i - 1, column: j + 1 }, // bottom right
-        { row: i + 1, column: j }, // top
-        { row: i - 1, column: j }, // bottom
+        { row: i + 1, column: j + 0 }, // top
+        { row: i - 1, column: j + 0 }, // bottom
         { row: i + 1, column: j - 1 }, // top left
-        { row: i, column: j - 1 }, // left
+        { row: i + 0, column: j - 1 }, // left
         { row: i - 1, column: j - 1 } // bottom left
     ].filter(
         (key) =>
