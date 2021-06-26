@@ -8,7 +8,7 @@ type GameEnd = { result: 'Win'; grid: Grid } | { result: 'Loss'; grid: Grid }
 
 type AppEvent =
     | { type: 'CHOOSESIZE'; size: number }
-    | { type: 'STARTGAME'; size: number }
+    | { type: 'STARTGAME' }
     | { type: 'POPULATEBOARD'; position: Position }
     | { type: 'CLICKCELL'; position: Position }
 
