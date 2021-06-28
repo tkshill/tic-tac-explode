@@ -1,10 +1,16 @@
 import { Position, Grid, createGrid, updateGrid } from './gamedata'
 import { createMachine, assign, interpret } from 'xstate'
 
-type AppContext = Initial | ActiveGame | GameEnd
-type Initial = { size: number }
-type ActiveGame = { grid: Grid }
-type GameEnd = { result: 'Win'; grid: Grid } | { result: 'Loss'; grid: Grid }
+type AppContext = PreGame | OpeningGame | ActiveGame | EndGame
+
+type PreGame = GameSize
+type GameSize = { size: number }
+type Timer = { duration: number }
+type OpeningGame = Timer & GameSize
+type GameBoard = { grid: Grid }
+type ActiveGame = Timer & GameBoard
+type GameResult = { result: 'Win' } | { result: 'Draw' }
+type EndGame = GameResult & GameBoard
 
 type AppEvent =
     | { type: 'CHOOSESIZE'; size: number }
@@ -13,26 +19,27 @@ type AppEvent =
     | { type: 'CLICKCELL'; position: Position }
 
 type AppState =
-    | { value: 'init' | 'preGame'; context: Initial }
+    | { value: 'preGame'; context: PreGame }
+    | { value: 'openingGame'; context: OpeningGame }
     | { value: 'activeGame'; context: ActiveGame }
-    | { value: 'gameEnd'; context: GameEnd }
+    | { value: 'endGame'; context: EndGame }
 
 export const appMachine = createMachine<AppContext, AppEvent, AppState>({
-    initial: 'init',
+    initial: 'preGame',
     context: { size: 3 },
     strict: true,
     states: {
-        init: {
+        preGame: {
             on: {
                 CHOOSESIZE: {
                     actions: assign((_, event) => ({ size: event.size }))
                 },
                 STARTGAME: {
-                    target: 'preGame'
+                    target: 'openingGame'
                 }
             }
         },
-        preGame: {
+        openingGame: {
             on: {
                 POPULATEBOARD: {
                     target: 'activeGame',
@@ -61,6 +68,6 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>({
                 }
             }
         },
-        gameEnd: {}
+        endGame: {}
     }
 })
