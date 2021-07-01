@@ -12,8 +12,7 @@ const InitScreen = () => {
         rownum: number
         colnum: number
     }) => {
-        const display =
-            props.cell.status === 'Uncovered' ? '' : props.cell.value
+        const display = props.cell.status === 'Covered' ? '' : props.cell.value
         return (
             <button
                 key={props.colnum}
@@ -82,7 +81,12 @@ const InitScreen = () => {
             </div>
         )
     } else if (current.matches('inGame.activeGame')) {
-        return <div></div>
+        return (
+            <div>
+                <div>{current.context.duration}</div>
+                <GridComp grid={current.context.grid} />
+            </div>
+        )
     } else {
         return <div></div>
     }

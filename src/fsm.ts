@@ -47,18 +47,18 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>({
         },
         inGame: {
             initial: 'openingGame',
+            invoke: {
+                src: (_) => (callback) => {
+                    const interval = setInterval(() => {
+                        callback('TICK')
+                    }, 1000)
+                    return () => {
+                        clearInterval(interval)
+                    }
+                }
+            },
             states: {
                 openingGame: {
-                    invoke: {
-                        src: (_) => (callback) => {
-                            const interval = setInterval(() => {
-                                callback('TICK')
-                            }, 1000)
-                            return () => {
-                                clearInterval(interval)
-                            }
-                        }
-                    },
                     on: {
                         POPULATEBOARD: {
                             target: 'activeGame',
