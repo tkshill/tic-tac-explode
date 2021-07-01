@@ -1,8 +1,8 @@
 import { shuffle } from './helpers'
 
 export type Position = { row: number; column: number }
-type CellValue = 'Bomb' | number
-type Cell =
+export type CellValue = 'Bomb' | number
+export type Cell =
     | { status: 'Covered'; value: CellValue }
     | { status: 'Uncovered'; value: CellValue }
 

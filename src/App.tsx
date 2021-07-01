@@ -1,35 +1,53 @@
 import './styles.css'
 import { appMachine } from './fsm'
 import { useMachine } from '@xstate/react'
+import { Grid, Cell } from './gamedata'
 
 const InitScreen = () => {
     const [current, send] = useMachine(appMachine)
     console.log(current.context)
 
-    const ButtonRow = (props: { size: number; rownumber: number }) => (
+    const CellComp = (props: {
+        cell: Cell
+        rownum: number
+        colnum: number
+    }) => {
+        const display =
+            props.cell.status === 'Uncovered' ? '' : props.cell.value
+        return (
+            <button
+                key={props.colnum}
+                onClick={(_) =>
+                    send({
+                        type: 'POPULATEBOARD',
+                        position: {
+                            row: props.rownum,
+                            column: props.colnum
+                        }
+                    })
+                }
+            >
+                {display}
+            </button>
+        )
+    }
+
+    const RowComp = (props: { row: Cell[]; rownumber: number }) => (
         <div>
-            {[...Array(props.size)].map((_, colnumber) => (
-                <button
-                    onClick={(_) =>
-                        send({
-                            type: 'POPULATEBOARD',
-                            position: {
-                                row: props.rownumber,
-                                column: colnumber
-                            }
-                        })
-                    }
-                >
-                    {props.rownumber},{colnumber}
-                </button>
+            {[...props.row].map((cell, colnumber) => (
+                <CellComp
+                    cell={cell}
+                    rownum={props.rownumber}
+                    colnum={colnumber}
+                />
             ))}
         </div>
     )
 
-    const Grid = (props: { size: number }) => (
+    const GridComp = (props: { grid: Grid }) => (
         <div>
-            {[...Array(props.size)].map((_, index) => (
-                <ButtonRow size={props.size} rownumber={index} />
+            {[...props.grid].map((row, index) => (
+                <RowComp key={index} row={row} rownumber={index} />
             ))}
         </div>
     )
@@ -57,7 +75,14 @@ const InitScreen = () => {
         )
     } else if (current.matches('inGame.openingGame')) {
         const size = current.context.size
-        return <Grid size={size} />
+        return (
+            <div>
+                <div>{current.context.duration}</div>
+                <Grid1 size={size} />
+            </div>
+        )
+    } else if (current.matches('inGame.activeGame')) {
+        return <div></div>
     } else {
         return <div></div>
     }
