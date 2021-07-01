@@ -4,19 +4,21 @@ import { createMachine, assign, interpret } from 'xstate'
 type AppContext = PreGame | OpeningGame | ActiveGame | EndGame
 
 type PreGame = GameSize
+type OpeningGame = Timer & GameSize
+type ActiveGame = Timer & GameBoard
+type EndGame = GameResult & GameBoard
+
 type GameSize = { size: number }
 type Timer = { duration: number }
-type OpeningGame = Timer & GameSize
 type GameBoard = { grid: Grid }
-type ActiveGame = Timer & GameBoard
 type GameResult = { result: 'Win' } | { result: 'Draw' }
-type EndGame = GameResult & GameBoard
 
 type AppEvent =
     | { type: 'CHOOSESIZE'; size: number }
     | { type: 'STARTGAME' }
     | { type: 'POPULATEBOARD'; position: Position }
     | { type: 'CLICKCELL'; position: Position }
+    | { type: 'TICK' }
 
 type AppState =
     | { value: 'preGame'; context: PreGame }
@@ -35,11 +37,25 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>({
                     actions: assign((_, event) => ({ size: event.size }))
                 },
                 STARTGAME: {
-                    target: 'openingGame'
+                    target: 'openingGame',
+                    actions: assign((context, _) => ({
+                        ...context,
+                        duration: 0
+                    }))
                 }
             }
         },
         openingGame: {
+            invoke: {
+                src: (_) => (callback) => {
+                    const interval = setInterval(() => {
+                        callback('TICK')
+                    }, 1000)
+                    return () => {
+                        clearInterval(interval)
+                    }
+                }
+            },
             on: {
                 POPULATEBOARD: {
                     target: 'activeGame',
@@ -54,6 +70,18 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>({
                               }
                             : context
                     )
+                },
+                TICK: {
+                    actions: assign((context, _) => {
+                        if ('duration' in context) {
+                            return {
+                                ...context,
+                                duration: context.duration + 1
+                            }
+                        } else {
+                            return context
+                        }
+                    })
                 }
             }
         },
