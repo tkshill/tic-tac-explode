@@ -4,7 +4,7 @@ import { useMachine } from '@xstate/react'
 
 const InitScreen = () => {
     const [current, send] = useMachine(appMachine)
-    console.log(current.value)
+    console.log(current.context)
 
     const ButtonRow = (props: { size: number; rownumber: number }) => (
         <div>
@@ -34,7 +34,7 @@ const InitScreen = () => {
         </div>
     )
 
-    if (current.matches('init')) {
+    if (current.matches('preGame')) {
         return (
             <div>
                 <select
@@ -55,7 +55,7 @@ const InitScreen = () => {
                 </button>
             </div>
         )
-    } else if (current.matches('preGame')) {
+    } else if (current.matches('inGame.openingGame')) {
         const size = current.context.size
         return <Grid size={size} />
     } else {
