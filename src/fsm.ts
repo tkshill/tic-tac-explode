@@ -22,8 +22,8 @@ type AppEvent =
 
 type AppState =
     | { value: 'preGame'; context: PreGame }
-    | { value: 'openingGame'; context: OpeningGame }
-    | { value: 'activeGame'; context: ActiveGame }
+    | { value: 'inGame.openingGame'; context: OpeningGame }
+    | { value: 'inGame.activeGame'; context: ActiveGame }
     | { value: 'endGame'; context: EndGame }
 
 export const appMachine = createMachine<AppContext, AppEvent, AppState>({
@@ -37,7 +37,7 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>({
                     actions: assign((_, event) => ({ size: event.size }))
                 },
                 STARTGAME: {
-                    target: 'openingGame',
+                    target: 'inGame.openingGame',
                     actions: assign((context, _) => ({
                         ...context,
                         duration: 0
@@ -45,32 +45,55 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>({
                 }
             }
         },
-        openingGame: {
-            invoke: {
-                src: (_) => (callback) => {
-                    const interval = setInterval(() => {
-                        callback('TICK')
-                    }, 1000)
-                    return () => {
-                        clearInterval(interval)
+        inGame: {
+            initial: 'openingGame',
+            states: {
+                openingGame: {
+                    invoke: {
+                        src: (_) => (callback) => {
+                            const interval = setInterval(() => {
+                                callback('TICK')
+                            }, 1000)
+                            return () => {
+                                clearInterval(interval)
+                            }
+                        }
+                    },
+                    on: {
+                        POPULATEBOARD: {
+                            target: 'activeGame',
+                            actions: assign((context, event) =>
+                                'size' in context
+                                    ? {
+                                          grid: createGrid(
+                                              context.size,
+                                              event.position,
+                                              context.size
+                                          )
+                                      }
+                                    : context
+                            )
+                        }
+                    }
+                },
+                activeGame: {
+                    on: {
+                        CLICKCELL: {
+                            actions: assign((context, event) =>
+                                'grid' in context
+                                    ? {
+                                          grid: updateGrid(
+                                              event.position,
+                                              context.grid
+                                          )
+                                      }
+                                    : context
+                            )
+                        }
                     }
                 }
             },
             on: {
-                POPULATEBOARD: {
-                    target: 'activeGame',
-                    actions: assign((context, event) =>
-                        'size' in context
-                            ? {
-                                  grid: createGrid(
-                                      context.size,
-                                      event.position,
-                                      context.size
-                                  )
-                              }
-                            : context
-                    )
-                },
                 TICK: {
                     actions: assign((context, _) => {
                         if ('duration' in context) {
@@ -82,17 +105,6 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>({
                             return context
                         }
                     })
-                }
-            }
-        },
-        activeGame: {
-            on: {
-                CLICKCELL: {
-                    actions: assign((context, event) =>
-                        'grid' in context
-                            ? { grid: updateGrid(event.position, context.grid) }
-                            : context
-                    )
                 }
             }
         },
