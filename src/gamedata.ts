@@ -43,6 +43,11 @@ function mineOrNumber(i: number, j: number, grid: Grid): Cell {
     }
 }
 
+// create of initial grid of zeros
+export const createOpeningGrid = (size: number): Grid =>
+    Array.from(Array(size), () =>
+        Array.from(Array(size), () => ({ status: 'Covered', value: 0 }))
+    )
 /*
 Create the initial grid for a game of minesweeper
 */
@@ -51,10 +56,8 @@ export function createGrid(
     initialCellClicked: Position,
     minesWanted: number
 ): Grid {
-    // create of initial grid of zeros
-    const newGrid: Grid = Array.from(Array(size), () =>
-        Array.from(Array(size), () => ({ status: 'Covered', value: 0 }))
-    )
+    const newGrid = createOpeningGrid(size)
+
     // convert the inital click position to a single number
     const initPosIndex =
         initialCellClicked.row * size + initialCellClicked.column

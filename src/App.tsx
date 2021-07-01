@@ -1,7 +1,7 @@
 import './styles.css'
 import { appMachine } from './fsm'
 import { useMachine } from '@xstate/react'
-import { Grid, Cell } from './gamedata'
+import { Grid, Cell, createOpeningGrid } from './gamedata'
 
 const InitScreen = () => {
     const [current, send] = useMachine(appMachine)
@@ -74,11 +74,11 @@ const InitScreen = () => {
             </div>
         )
     } else if (current.matches('inGame.openingGame')) {
-        const size = current.context.size
+        const grid: Grid = createOpeningGrid(current.context.size)
         return (
             <div>
                 <div>{current.context.duration}</div>
-                <Grid1 size={size} />
+                <GridComp grid={grid} />
             </div>
         )
     } else if (current.matches('inGame.activeGame')) {
