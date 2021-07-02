@@ -8,6 +8,24 @@ export type Cell =
 
 export type Grid = Cell[][]
 
+const getSurroundingIndexes = (position:Position, grid:Grid): Position[] =>
+[
+    { row: position.row + 1, column: position.column + 1 }, // top right
+    { row: position.row + 0, column: position.column + 1 }, // right
+    { row: position.row - 1, column: position.column + 1 }, // bottom right
+    { row: position.row + 1, column: position.column + 0 }, // top
+    { row: position.row - 1, column: position.column + 0 }, // bottom
+    { row: position.row + 1, column: position.column - 1 }, // top left
+    { row: position.row + 0, column: position.column - 1 }, // left
+    { row: position.row - 1, column: position.column - 1 } // bottom left
+].filter(
+    (key) =>
+        key.row >= 0 &&
+        key.column >= 0 &&
+        key.row < grid.length &&
+        key.column < grid.length
+)
+
 /*
 Given a row index, a column index and a grid of cells,
 if the cell contains a bomb, leave it unchanged,
@@ -86,4 +104,14 @@ export function createGrid(
     return newGrid
 }
 
-export const updateGrid = (position: Position, grid: Grid) => grid
+const getAdjacents = (position:Position, grid:Grid) => {
+
+}
+
+export const updateGrid = (position: Position, grid: Grid) => {
+    grid[position.row][position.column].status = 'Uncovered'
+    const adjacents = getAdjacents(position, grid)
+}
+
+
+    
