@@ -8,23 +8,23 @@ export type Cell =
 
 export type Grid = Cell[][]
 
-const getSurroundingIndexes = (position:Position, grid:Grid): Position[] =>
-[
-    { row: position.row + 1, column: position.column + 1 }, // top right
-    { row: position.row + 0, column: position.column + 1 }, // right
-    { row: position.row - 1, column: position.column + 1 }, // bottom right
-    { row: position.row + 1, column: position.column + 0 }, // top
-    { row: position.row - 1, column: position.column + 0 }, // bottom
-    { row: position.row + 1, column: position.column - 1 }, // top left
-    { row: position.row + 0, column: position.column - 1 }, // left
-    { row: position.row - 1, column: position.column - 1 } // bottom left
-].filter(
-    (key) =>
-        key.row >= 0 &&
-        key.column >= 0 &&
-        key.row < grid.length &&
-        key.column < grid.length
-)
+const getSurroundingIndexes = (position: Position, grid: Grid): Position[] =>
+    [
+        { row: position.row + 1, column: position.column + 1 }, // top right
+        { row: position.row + 0, column: position.column + 1 }, // right
+        { row: position.row - 1, column: position.column + 1 }, // bottom right
+        { row: position.row + 1, column: position.column + 0 }, // top
+        { row: position.row - 1, column: position.column + 0 }, // bottom
+        { row: position.row + 1, column: position.column - 1 }, // top left
+        { row: position.row + 0, column: position.column - 1 }, // left
+        { row: position.row - 1, column: position.column - 1 } // bottom left
+    ].filter(
+        (key) =>
+            key.row >= 0 &&
+            key.column >= 0 &&
+            key.row < grid.length &&
+            key.column < grid.length
+    )
 
 /*
 Given a row index, a column index and a grid of cells,
@@ -34,22 +34,7 @@ bombs surrounding it.
 */
 function mineOrNumber(i: number, j: number, grid: Grid): Cell {
     // if you dont filter the values that cant exist in the grid, the browser will yell at you.
-    const surrondingIndexes: Position[] = [
-        { row: i + 1, column: j + 1 }, // top right
-        { row: i + 0, column: j + 1 }, // right
-        { row: i - 1, column: j + 1 }, // bottom right
-        { row: i + 1, column: j + 0 }, // top
-        { row: i - 1, column: j + 0 }, // bottom
-        { row: i + 1, column: j - 1 }, // top left
-        { row: i + 0, column: j - 1 }, // left
-        { row: i - 1, column: j - 1 } // bottom left
-    ].filter(
-        (key) =>
-            key.row >= 0 &&
-            key.column >= 0 &&
-            key.row < grid.length &&
-            key.column < grid.length
-    )
+    const surrondingIndexes = getSurroundingIndexes({ row: i, column: j }, grid)
 
     if (grid[i][j].value === 'Bomb') {
         return grid[i][j]
@@ -104,14 +89,7 @@ export function createGrid(
     return newGrid
 }
 
-const getAdjacents = (position:Position, grid:Grid) => {
-
-}
-
 export const updateGrid = (position: Position, grid: Grid) => {
     grid[position.row][position.column].status = 'Uncovered'
     const adjacents = getAdjacents(position, grid)
 }
-
-
-    
