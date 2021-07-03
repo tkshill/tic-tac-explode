@@ -89,7 +89,37 @@ export function createGrid(
     return newGrid
 }
 
+const propogateZeroes = (position: Position, grid: Grid): void => {
+    const adjacents = getSurroundingIndexes(position, grid)
+    const zeroes = adjacents.filter(
+        (pos) => grid[pos.row][pos.column].value === 0
+    )
+
+    zeroes.forEach((pos) => {
+        const zeroAdjacents = getSurroundingIndexes(pos, grid)
+
+        zeroAdjacents.map(
+            (adj) => (grid[adj.row][adj.column].status = 'Uncovered')
+        )
+
+        grid[pos.row][pos.column].status = 'Uncovered'
+
+        propogateZeroes(pos, grid)
+    })
+}
+
+export const isWin = (grid: Grid) => {
+    const allCells = ([] as Cell[]).concat(...grid)
+    const bombs = allCells.filter((cell) => cell.value === 'Bomb')
+    const notBombs = allCells.filter((cell) => cell.value !== 'Bomb')
+
+    return (
+        bombs.every((cell) => cell.status === 'Covered') &&
+        notBombs.every((cell) => cell.status === 'Uncovered')
+    )
+}
+
 export const updateGrid = (position: Position, grid: Grid) => {
     grid[position.row][position.column].status = 'Uncovered'
-    const adjacents = getAdjacents(position, grid)
+    propogateZeroes(position, grid)
 }
