@@ -108,6 +108,9 @@ const propogateZeroes = (position: Position, grid: Grid): void => {
     })
 }
 
+export const isBomb = (position: Position, grid: Grid) =>
+    grid[position.row][position.column].value === 'Bomb'
+
 export const isWin = (grid: Grid) => {
     const allCells = ([] as Cell[]).concat(...grid)
     const bombs = allCells.filter((cell) => cell.value === 'Bomb')
