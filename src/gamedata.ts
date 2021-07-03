@@ -122,7 +122,8 @@ export const isWin = (grid: Grid) => {
     )
 }
 
-export const updateGrid = (position: Position, grid: Grid) => {
+export const updateGrid = (position: Position, grid: Grid): Grid => {
     grid[position.row][position.column].status = 'Uncovered'
     propogateZeroes(position, grid)
+    return grid
 }

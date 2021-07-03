@@ -1,4 +1,11 @@
-import { Position, Grid, createGrid, updateGrid } from './gamedata'
+import {
+    Position,
+    Grid,
+    createGrid,
+    updateGrid,
+    isBomb,
+    isWin
+} from './gamedata'
 import { createMachine, assign } from 'xstate'
 
 type AppContext = PreGame | OpeningGame | ActiveGame | EndGame
@@ -12,8 +19,13 @@ type GameSize = { size: number }
 type Timer = { duration: number }
 type GameBoard = { grid: Grid }
 
-const didTheyClickABomb = (context: any, event: any) => true
-const areAllNonBombsRevealed = (context: any, event: any) => true
+const didTheyClickABomb = (context: any, event: any) =>
+    'grid' in context && 'position' in event
+        ? isBomb(event.position, context.grid)
+        : false
+
+const areAllNonBombsRevealed = (context: any, event: any) =>
+    'grid' in context && 'position' in event ? isWin(context.grid) : false
 
 type AppEvent =
     | { type: 'CHOOSESIZE'; size: number }
@@ -26,8 +38,8 @@ type AppState =
     | { value: 'preGame'; context: PreGame }
     | { value: 'inGame.openingGame'; context: OpeningGame }
     | { value: 'inGame.activeGame'; context: ActiveGame }
-    | { value: 'endGame.Win'; context: EndGame }
-    | { value: 'endGame.Lose'; context: EndGame }
+    | { value: 'endGame.win'; context: EndGame }
+    | { value: 'endGame.lose'; context: EndGame }
 
 export const appMachine = createMachine<AppContext, AppEvent, AppState>(
     {
@@ -85,12 +97,12 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>(
                             CLICKCELL: [
                                 {
                                     cond: didTheyClickABomb,
-                                    target: 'endGame.Lose',
+                                    target: 'endGame.lose',
                                     actions: ['updateGame']
                                 },
                                 {
                                     cond: areAllNonBombsRevealed,
-                                    target: 'endGame.Win',
+                                    target: 'endGame.win',
                                     actions: ['updateGrid']
                                 },
                                 {
@@ -117,8 +129,8 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>(
             },
             endGame: {
                 states: {
-                    Win: {},
-                    Lose: {}
+                    win: {},
+                    lose: {}
                 }
             }
         }
