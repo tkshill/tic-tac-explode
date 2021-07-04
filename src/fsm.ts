@@ -26,7 +26,9 @@ const didTheyClickABomb = (context: any, event: any) =>
         : false
 
 const areAllNonBombsRevealed = (context: any, event: any) =>
-    'grid' in context && 'position' in event ? isWin(context.grid) : false
+    'grid' in context && 'position' in event
+        ? isWin(updateGrid(event.position, context.grid))
+        : false
 
 type AppEvent =
     | { type: 'CHOOSESIZE'; size: number }
@@ -77,7 +79,7 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>(
                 states: {
                     openingGame: {
                         on: {
-                            POPULATEBOARD: {
+                            CLICKCELL: {
                                 target: 'activeGame',
                                 actions: assign((context, event) => {
                                     if ('size' in context) {
@@ -116,15 +118,16 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>(
                     },
                     CLICKCELL: [
                         {
-                            cond: didTheyClickABomb,
-                            target: 'endGame.lose',
-                            actions: ['updateGame']
-                        },
-                        {
                             cond: areAllNonBombsRevealed,
                             target: 'endGame.win',
                             actions: ['updateGame']
                         },
+                        {
+                            cond: didTheyClickABomb,
+                            target: 'endGame.lose',
+                            actions: ['updateGame']
+                        },
+
                         {
                             actions: ['updateGame']
                         }

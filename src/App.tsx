@@ -4,7 +4,7 @@ import React from 'react'
 import { useMachine } from '@xstate/react'
 import { Grid, Cell, createOpeningGrid } from './gamedata'
 
-const EventContext = React.createContext<any>('')
+//const EventContext = React.createContext<any>('')
 
 const InitScreen = () => {
     const [current, send] = useMachine(appMachine)
@@ -15,7 +15,7 @@ const InitScreen = () => {
         rownum: number
         colnum: number
     }) => {
-        const eventName = React.useContext(EventContext)
+        //const eventName = React.useContext(EventContext)
 
         const display =
             props.cell.status === 'Covered' ? '  ' : props.cell.value
@@ -24,7 +24,7 @@ const InitScreen = () => {
                 key={props.colnum}
                 onClick={(_) =>
                     send({
-                        type: eventName,
+                        type: 'CLICKCELL',
                         position: {
                             row: props.rownum,
                             column: props.colnum
@@ -82,18 +82,23 @@ const InitScreen = () => {
     } else if (current.matches('inGame.openingGame')) {
         const grid: Grid = createOpeningGrid(current.context.size)
         return (
-            <EventContext.Provider value="POPULATEBOARD">
+            <div>
                 <div>{current.context.duration}</div>
                 <GridComp grid={grid} />
-            </EventContext.Provider>
+            </div>
         )
     } else if (current.matches('inGame.activeGame')) {
         return (
-            <EventContext.Provider value="CLICKCELL">
+            <div>
                 <div>{current.context.duration}</div>
                 <GridComp grid={current.context.grid} />
-            </EventContext.Provider>
+            </div>
         )
+    } else if (
+        current.matches('endGame.win') ||
+        current.matches('endGame.lose')
+    ) {
+        return <GridComp grid={current.context.grid} />
     } else {
         return <div></div>
     }

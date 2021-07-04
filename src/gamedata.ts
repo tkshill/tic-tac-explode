@@ -96,6 +96,8 @@ export const isWin = (grid: Grid) => {
     const allCells = ([] as Cell[]).concat(...grid)
     const bombs = allCells.filter((cell) => cell.value === 'Bomb')
     const notBombs = allCells.filter((cell) => cell.value !== 'Bomb')
+    console.log(bombs)
+    console.log(notBombs)
 
     return (
         bombs.every((cell) => cell.status === 'Covered') &&
