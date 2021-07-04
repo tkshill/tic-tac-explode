@@ -3,6 +3,7 @@ import {
     Grid,
     createGrid,
     updateGrid,
+    uncoverAllCells,
     isBomb,
     isWin
 } from './gamedata'
@@ -144,6 +145,14 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>(
                 'grid' in context && 'position' in event
                     ? {
                           grid: updateGrid(event.position, context.grid)
+                      }
+                    : context,
+            updateGameEnd: (context: any, event: any) =>
+                'grid' in context && 'position' in event
+                    ? {
+                          grid: uncoverAllCells(
+                              updateGrid(event.position, context.grid)
+                          )
                       }
                     : context
         },

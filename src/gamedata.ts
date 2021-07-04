@@ -117,7 +117,16 @@ const getNonZeroAdjacents = (position: Position, grid: Grid): Position[] =>
             grid[pos.row][pos.column].status === 'Covered'
     )
 
+export const uncoverAllCells = (grid: Grid): Grid => {
+    grid.forEach((row, i) =>
+        row.forEach((_, j) => (grid[i][j].status = 'Uncovered'))
+    )
+    return grid
+}
+
 const propogateZeroes = (position: Position, grid: Grid): void => {
+    // takes the position of a zero cell and blooms to all adjacent zero
+    // cells.
     grid[position.row][position.column].status = 'Uncovered'
 
     const nonZeroAdjacents = getNonZeroAdjacents(position, grid)
@@ -135,6 +144,7 @@ export const updateGrid = (position: Position, grid: Grid): Grid => {
     grid[position.row][position.column].status = 'Uncovered'
 
     if (grid[position.row][position.column].value === 'Bomb') {
+        uncoverAllCells(grid)
         return grid
     } else {
         const uncoveredZeroes = getValidZeros(position, grid)
