@@ -17,7 +17,8 @@ const InitScreen = () => {
     }) => {
         const eventName = React.useContext(EventContext)
 
-        const display = props.cell.status === 'Covered' ? '' : props.cell.value
+        const display =
+            props.cell.status === 'Covered' ? '  ' : props.cell.value
         return (
             <button
                 key={props.colnum}

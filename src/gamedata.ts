@@ -89,25 +89,6 @@ export function createGrid(
     return newGrid
 }
 
-const propogateZeroes = (position: Position, grid: Grid): void => {
-    const adjacents = getSurroundingIndexes(position, grid)
-    const zeroes = adjacents.filter(
-        (pos) => grid[pos.row][pos.column].value === 0
-    )
-
-    zeroes.forEach((pos) => {
-        const zeroAdjacents = getSurroundingIndexes(pos, grid)
-
-        zeroAdjacents.map(
-            (adj) => (grid[adj.row][adj.column].status = 'Uncovered')
-        )
-
-        grid[pos.row][pos.column].status = 'Uncovered'
-
-        propogateZeroes(pos, grid)
-    })
-}
-
 export const isBomb = (position: Position, grid: Grid) =>
     grid[position.row][position.column].value === 'Bomb'
 
@@ -122,8 +103,42 @@ export const isWin = (grid: Grid) => {
     )
 }
 
+const getValidZeros = (position: Position, grid: Grid): Position[] =>
+    getSurroundingIndexes(position, grid).filter(
+        (pos) =>
+            grid[pos.row][pos.column].value === 0 &&
+            grid[pos.row][pos.column].status === 'Covered'
+    )
+
+const getNonZeroAdjacents = (position: Position, grid: Grid): Position[] =>
+    getSurroundingIndexes(position, grid).filter(
+        (pos) =>
+            grid[pos.row][pos.column].value !== 0 &&
+            grid[pos.row][pos.column].status === 'Covered'
+    )
+
+const propogateZeroes = (position: Position, grid: Grid): void => {
+    grid[position.row][position.column].status = 'Uncovered'
+
+    const nonZeroAdjacents = getNonZeroAdjacents(position, grid)
+
+    nonZeroAdjacents.map(
+        (adj) => (grid[adj.row][adj.column].status = 'Uncovered')
+    )
+
+    const zeroes = getValidZeros(position, grid)
+
+    zeroes.map((pos) => propogateZeroes(pos, grid))
+}
+
 export const updateGrid = (position: Position, grid: Grid): Grid => {
     grid[position.row][position.column].status = 'Uncovered'
-    propogateZeroes(position, grid)
-    return grid
+
+    if (grid[position.row][position.column].value === 'Bomb') {
+        return grid
+    } else {
+        const uncoveredZeroes = getValidZeros(position, grid)
+        uncoveredZeroes.map((pos) => propogateZeroes(pos, grid))
+        return grid
+    }
 }

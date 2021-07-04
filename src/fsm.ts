@@ -67,7 +67,7 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>(
                     src: (_) => (callback) => {
                         const interval = setInterval(() => {
                             callback('TICK')
-                        }, 3000)
+                        }, 10000)
                         return () => {
                             clearInterval(interval)
                         }
@@ -78,17 +78,23 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>(
                         on: {
                             POPULATEBOARD: {
                                 target: 'activeGame',
-                                actions: assign((context, event) =>
-                                    'size' in context
-                                        ? {
-                                              grid: createGrid(
-                                                  context.size,
-                                                  event.position,
-                                                  context.size
-                                              )
-                                          }
-                                        : context
-                                )
+                                actions: assign((context, event) => {
+                                    if ('size' in context) {
+                                        const newGrid = createGrid(
+                                            context.size,
+                                            event.position,
+                                            context.size
+                                        )
+
+                                        const grid = updateGrid(
+                                            event.position,
+                                            newGrid
+                                        )
+                                        return { ...context, grid: grid }
+                                    } else {
+                                        return context
+                                    }
+                                })
                             }
                         }
                     },
