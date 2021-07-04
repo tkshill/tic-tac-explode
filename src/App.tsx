@@ -1,7 +1,10 @@
 import './styles.css'
 import { appMachine } from './fsm'
+import React from 'react'
 import { useMachine } from '@xstate/react'
 import { Grid, Cell, createOpeningGrid } from './gamedata'
+
+const EventContext = React.createContext<any>('')
 
 const InitScreen = () => {
     const [current, send] = useMachine(appMachine)
@@ -12,13 +15,15 @@ const InitScreen = () => {
         rownum: number
         colnum: number
     }) => {
+        const eventName = React.useContext(EventContext)
+
         const display = props.cell.status === 'Covered' ? '' : props.cell.value
         return (
             <button
                 key={props.colnum}
                 onClick={(_) =>
                     send({
-                        type: 'POPULATEBOARD',
+                        type: eventName,
                         position: {
                             row: props.rownum,
                             column: props.colnum
@@ -76,17 +81,17 @@ const InitScreen = () => {
     } else if (current.matches('inGame.openingGame')) {
         const grid: Grid = createOpeningGrid(current.context.size)
         return (
-            <div>
+            <EventContext.Provider value="POPULATEBOARD">
                 <div>{current.context.duration}</div>
                 <GridComp grid={grid} />
-            </div>
+            </EventContext.Provider>
         )
     } else if (current.matches('inGame.activeGame')) {
         return (
-            <div>
+            <EventContext.Provider value="CLICKCELL">
                 <div>{current.context.duration}</div>
                 <GridComp grid={current.context.grid} />
-            </div>
+            </EventContext.Provider>
         )
     } else {
         return <div></div>
