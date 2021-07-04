@@ -4,8 +4,6 @@ import React from 'react'
 import { useMachine } from '@xstate/react'
 import { Grid, Cell, createOpeningGrid } from './gamedata'
 
-//const EventContext = React.createContext<any>('')
-
 const InitScreen = () => {
     const [current, send] = useMachine(appMachine)
     console.log(current.context)
@@ -15,8 +13,6 @@ const InitScreen = () => {
         rownum: number
         colnum: number
     }) => {
-        //const eventName = React.useContext(EventContext)
-
         const display =
             props.cell.status === 'Covered' ? '  ' : props.cell.value
         return (
