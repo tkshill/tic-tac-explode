@@ -94,11 +94,20 @@ const InitScreen = () => {
                 <GridComp grid={current.context.grid} />
             </div>
         )
-    } else if (
-        current.matches('endGame.win') ||
-        current.matches('endGame.lose')
-    ) {
-        return <GridComp grid={current.context.grid} />
+    } else if (current.matches('endGame.win')) {
+        return (
+            <div>
+                <div>You won!</div>
+                <GridComp grid={current.context.grid} />
+            </div>
+        )
+    } else if (current.matches('endGame.lose')) {
+        return (
+            <div>
+                <div>You lost!</div>
+                <GridComp grid={current.context.grid} />
+            </div>
+        )
     } else {
         return <div></div>
     }

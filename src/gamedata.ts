@@ -96,8 +96,6 @@ export const isWin = (grid: Grid) => {
     const allCells = ([] as Cell[]).concat(...grid)
     const bombs = allCells.filter((cell) => cell.value === 'Bomb')
     const notBombs = allCells.filter((cell) => cell.value !== 'Bomb')
-    console.log(bombs)
-    console.log(notBombs)
 
     return (
         bombs.every((cell) => cell.status === 'Covered') &&
@@ -146,7 +144,6 @@ export const updateGrid = (position: Position, grid: Grid): Grid => {
     grid[position.row][position.column].status = 'Uncovered'
 
     if (grid[position.row][position.column].value === 'Bomb') {
-        uncoverAllCells(grid)
         return grid
     } else {
         const uncoveredZeroes = getValidZeros(position, grid)

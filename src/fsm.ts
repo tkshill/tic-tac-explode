@@ -120,12 +120,12 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>(
                         {
                             cond: areAllNonBombsRevealed,
                             target: 'endGame.win',
-                            actions: ['updateGame']
+                            actions: ['updateGame', 'updateGameEnd']
                         },
                         {
                             cond: didTheyClickABomb,
                             target: 'endGame.lose',
-                            actions: ['updateGame']
+                            actions: ['updateGame', 'updateGameEnd']
                         },
 
                         {
@@ -153,9 +153,7 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>(
             updateGameEnd: (context: any, event: any) =>
                 'grid' in context && 'position' in event
                     ? {
-                          grid: uncoverAllCells(
-                              updateGrid(event.position, context.grid)
-                          )
+                          grid: uncoverAllCells(context.grid)
                       }
                     : context
         },
