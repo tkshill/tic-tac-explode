@@ -35,6 +35,7 @@ const InitScreen = () => {
         <div>
             {[...props.row].map((cell, colnumber) => (
                 <CellComp
+                    key={colnumber}
                     cell={cell}
                     rownum={props.rownumber}
                     colnum={colnumber}

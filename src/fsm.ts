@@ -67,7 +67,7 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>(
                     src: (_) => (callback) => {
                         const interval = setInterval(() => {
                             callback('TICK')
-                        }, 1000)
+                        }, 3000)
                         return () => {
                             clearInterval(interval)
                         }
@@ -92,25 +92,7 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>(
                             }
                         }
                     },
-                    activeGame: {
-                        on: {
-                            CLICKCELL: [
-                                {
-                                    cond: didTheyClickABomb,
-                                    target: 'endGame.lose',
-                                    actions: ['updateGame']
-                                },
-                                {
-                                    cond: areAllNonBombsRevealed,
-                                    target: 'endGame.win',
-                                    actions: ['updateGrid']
-                                },
-                                {
-                                    actions: ['updateGrid']
-                                }
-                            ]
-                        }
-                    }
+                    activeGame: {}
                 },
                 on: {
                     TICK: {
@@ -124,7 +106,22 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>(
                                 return context
                             }
                         })
-                    }
+                    },
+                    CLICKCELL: [
+                        {
+                            cond: didTheyClickABomb,
+                            target: 'endGame.lose',
+                            actions: ['updateGame']
+                        },
+                        {
+                            cond: areAllNonBombsRevealed,
+                            target: 'endGame.win',
+                            actions: ['updateGame']
+                        },
+                        {
+                            actions: ['updateGame']
+                        }
+                    ]
                 }
             },
             endGame: {
