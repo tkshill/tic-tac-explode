@@ -150,9 +150,12 @@ const updateGrid = (position: Position, grid: Grid): Grid => {
 
     if (grid[position.row][position.column].value === 'Bomb') {
         return grid
+        // } else if (grid[position.row][position.column].value === 0) {
+        //     propogateZeroes(position, grid)
+        //     return grid
     } else {
-        const uncoveredZeroes = getCoveredZeroes(position, grid)
-        uncoveredZeroes.map((pos) => propogateZeroes(pos, grid))
+        const coveredZeroes = getCoveredZeroes(position, grid)
+        coveredZeroes.map((pos) => propogateZeroes(pos, grid))
         return grid
     }
 }

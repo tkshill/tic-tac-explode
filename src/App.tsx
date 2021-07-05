@@ -1,8 +1,9 @@
-import './styles.css'
 import { appMachine } from './fsm'
 import React, { useContext } from 'react'
 import { useMachine } from '@xstate/react'
 import { Grid, Cell, createOpeningGrid } from './gamedata'
+import {} from 'react-bootstrap'
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 const FSMeventContext = React.createContext<any>(undefined)
 
@@ -10,26 +11,30 @@ const CellComp = (props: { cell: Cell; rownum: number; colnum: number }) => {
     const display = props.cell.status === 'Covered' ? '  ' : props.cell.value
 
     const send = useContext(FSMeventContext)
+    const style = { width: 'fill', height: 'fill' }
     return (
-        <button
-            key={props.colnum}
-            onClick={(_) =>
-                send({
-                    type: 'CLICKCELL',
-                    position: {
-                        row: props.rownum,
-                        column: props.colnum
-                    }
-                })
-            }
-        >
-            {display}
-        </button>
+        <td>
+            <button
+                style={style}
+                key={props.colnum}
+                onClick={(_) =>
+                    send({
+                        type: 'CLICKCELL',
+                        position: {
+                            row: props.rownum,
+                            column: props.colnum
+                        }
+                    })
+                }
+            >
+                {display}
+            </button>
+        </td>
     )
 }
 
 const RowComp = (props: { row: Cell[]; rownumber: number }) => (
-    <div>
+    <tr>
         {[...props.row].map((cell, colnumber) => (
             <CellComp
                 key={colnumber}
@@ -38,16 +43,18 @@ const RowComp = (props: { row: Cell[]; rownumber: number }) => (
                 colnum={colnumber}
             />
         ))}
-    </div>
+    </tr>
 )
 
-const GridComp = (props: { grid: Grid }) => (
-    <div>
-        {[...props.grid].map((row, index) => (
-            <RowComp key={index} row={row} rownumber={index} />
-        ))}
-    </div>
-)
+const GridComp = (props: { grid: Grid }) => {
+    return (
+        <table className="table">
+            {[...props.grid].map((row, index) => (
+                <RowComp key={index} row={row} rownumber={index} />
+            ))}
+        </table>
+    )
+}
 
 export default function App() {
     const [current, send] = useMachine(appMachine)
@@ -56,7 +63,7 @@ export default function App() {
     const Main = () => {
         if (current.matches('preGame')) {
             return (
-                <div>
+                <div className="container">
                     <select
                         value={current.context.size}
                         onChange={(e) =>
@@ -109,7 +116,7 @@ export default function App() {
         }
     }
     return (
-        <div className="App">
+        <div className="container">
             <FSMeventContext.Provider value={send}>
                 <Main />
             </FSMeventContext.Provider>
