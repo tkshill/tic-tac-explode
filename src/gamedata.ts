@@ -33,13 +33,13 @@ otherwise the cell contains a number representing the number of
 bombs surrounding it.
 */
 function mineOrNumber(i: number, j: number, grid: Grid): Cell {
-    // if you dont filter the values that cant exist in the grid, the browser will yell at you.
-    const surrondingIndexes = getSurroundingIndexes({ row: i, column: j }, grid)
-
     if (grid[i][j].value === 'Bomb') {
         return grid[i][j]
     } else {
-        const surrondingBombs = surrondingIndexes
+        const surrondingBombs = getSurroundingIndexes(
+            { row: i, column: j },
+            grid
+        )
             .map((pos) => grid[pos.row][pos.column])
             .filter((cell) => cell.value === 'Bomb').length
         return { status: 'Covered', value: surrondingBombs }
@@ -47,18 +47,19 @@ function mineOrNumber(i: number, j: number, grid: Grid): Cell {
 }
 
 // create of initial grid of zeros
-export const createOpeningGrid = (size: number): Grid =>
+const createOpeningGrid = (size: number): Grid =>
     Array.from(Array(size), () =>
         Array.from(Array(size), () => ({ status: 'Covered', value: 0 }))
     )
 /*
 Create the initial grid for a game of minesweeper
 */
-export function createGrid(
+function createGrid(
     size: number,
     initialCellClicked: Position,
     minesWanted: number
 ): Grid {
+    // given a grid size and a clicked cell, return a grid
     const newGrid = createOpeningGrid(size)
 
     // convert the inital click position to a single number
@@ -89,10 +90,11 @@ export function createGrid(
     return newGrid
 }
 
-export const isBomb = (position: Position, grid: Grid) =>
+const isBomb = (position: Position, grid: Grid) =>
     grid[position.row][position.column].value === 'Bomb'
 
-export const isWin = (grid: Grid) => {
+const isWin = (grid: Grid) => {
+    // if all non bombs are uncovered, you win
     const allCells = ([] as Cell[]).concat(...grid)
     const bombs = allCells.filter((cell) => cell.value === 'Bomb')
     const notBombs = allCells.filter((cell) => cell.value !== 'Bomb')
@@ -103,7 +105,7 @@ export const isWin = (grid: Grid) => {
     )
 }
 
-const getValidZeros = (position: Position, grid: Grid): Position[] =>
+const getCoveredZeroes = (position: Position, grid: Grid): Position[] =>
     getSurroundingIndexes(position, grid).filter(
         (pos) =>
             grid[pos.row][pos.column].value === 0 &&
@@ -111,13 +113,14 @@ const getValidZeros = (position: Position, grid: Grid): Position[] =>
     )
 
 const getNonZeroAdjacents = (position: Position, grid: Grid): Position[] =>
+    // get cells adjacent to a position that aren't uncovered
     getSurroundingIndexes(position, grid).filter(
         (pos) =>
             grid[pos.row][pos.column].value !== 0 &&
             grid[pos.row][pos.column].status === 'Covered'
     )
 
-export const uncoverAllCells = (grid: Grid): Grid => {
+const uncoverAllCells = (grid: Grid): Grid => {
     grid.forEach((row, i) =>
         row.forEach((_, j) => (grid[i][j].status = 'Uncovered'))
     )
@@ -135,19 +138,30 @@ const propogateZeroes = (position: Position, grid: Grid): void => {
         (adj) => (grid[adj.row][adj.column].status = 'Uncovered')
     )
 
-    const zeroes = getValidZeros(position, grid)
+    const zeroes = getCoveredZeroes(position, grid)
 
     zeroes.map((pos) => propogateZeroes(pos, grid))
 }
 
-export const updateGrid = (position: Position, grid: Grid): Grid => {
+const updateGrid = (position: Position, grid: Grid): Grid => {
+    // given the position of the latest clicked cell, update the grid based on the result
+    // and return the updated  grid
     grid[position.row][position.column].status = 'Uncovered'
 
     if (grid[position.row][position.column].value === 'Bomb') {
         return grid
     } else {
-        const uncoveredZeroes = getValidZeros(position, grid)
+        const uncoveredZeroes = getCoveredZeroes(position, grid)
         uncoveredZeroes.map((pos) => propogateZeroes(pos, grid))
         return grid
     }
+}
+
+export {
+    createOpeningGrid,
+    updateGrid,
+    isBomb,
+    isWin,
+    uncoverAllCells,
+    createGrid
 }

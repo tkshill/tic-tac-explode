@@ -70,7 +70,7 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>(
                     src: (_) => (callback) => {
                         const interval = setInterval(() => {
                             callback('TICK')
-                        }, 10000)
+                        }, 1000)
                         return () => {
                             clearInterval(interval)
                         }
