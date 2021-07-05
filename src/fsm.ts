@@ -33,7 +33,6 @@ const areAllNonBombsRevealed = (context: any, event: any) =>
 type AppEvent =
     | { type: 'CHOOSESIZE'; size: number }
     | { type: 'STARTGAME' }
-    | { type: 'POPULATEBOARD'; position: Position }
     | { type: 'CLICKCELL'; position: Position }
     | { type: 'TICK' }
 
