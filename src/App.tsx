@@ -2,7 +2,7 @@ import { appMachine } from './fsm'
 import React, { useContext } from 'react'
 import { useMachine } from '@xstate/react'
 import { Grid, Cell, createOpeningGrid } from './gamedata'
-import {} from 'react-bootstrap'
+import { Container, Row, Col } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 const FSMeventContext = React.createContext<any>(undefined)
@@ -13,7 +13,7 @@ const CellComp = (props: { cell: Cell; rownum: number; colnum: number }) => {
     const send = useContext(FSMeventContext)
     const style = { width: 'fill', height: 'fill' }
     return (
-        <td>
+        <Col>
             <button
                 style={style}
                 key={props.colnum}
@@ -29,12 +29,12 @@ const CellComp = (props: { cell: Cell; rownum: number; colnum: number }) => {
             >
                 {display}
             </button>
-        </td>
+        </Col>
     )
 }
 
 const RowComp = (props: { row: Cell[]; rownumber: number }) => (
-    <tr>
+    <Row>
         {[...props.row].map((cell, colnumber) => (
             <CellComp
                 key={colnumber}
@@ -43,16 +43,16 @@ const RowComp = (props: { row: Cell[]; rownumber: number }) => (
                 colnum={colnumber}
             />
         ))}
-    </tr>
+    </Row>
 )
 
 const GridComp = (props: { grid: Grid }) => {
     return (
-        <table className="table">
+        <Container>
             {[...props.grid].map((row, index) => (
                 <RowComp key={index} row={row} rownumber={index} />
             ))}
-        </table>
+        </Container>
     )
 }
 
