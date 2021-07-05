@@ -2,7 +2,7 @@ import { appMachine } from './fsm'
 import React, { useContext } from 'react'
 import { useMachine } from '@xstate/react'
 import { Grid, Cell, createOpeningGrid } from './gamedata'
-import { Container, Row, Col } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 const FSMeventContext = React.createContext<any>(undefined)
@@ -13,28 +13,26 @@ const CellComp = (props: { cell: Cell; rownum: number; colnum: number }) => {
     const send = useContext(FSMeventContext)
     const style = { width: 'fill', height: 'fill' }
     return (
-        <Col>
-            <button
-                style={style}
-                key={props.colnum}
-                onClick={(_) =>
-                    send({
-                        type: 'CLICKCELL',
-                        position: {
-                            row: props.rownum,
-                            column: props.colnum
-                        }
-                    })
-                }
-            >
-                {display}
-            </button>
-        </Col>
+        <Button
+            style={style}
+            key={props.colnum}
+            onClick={(_) =>
+                send({
+                    type: 'CLICKCELL',
+                    position: {
+                        row: props.rownum,
+                        column: props.colnum
+                    }
+                })
+            }
+        >
+            {display}
+        </Button>
     )
 }
 
 const RowComp = (props: { row: Cell[]; rownumber: number }) => (
-    <Row>
+    <div>
         {[...props.row].map((cell, colnumber) => (
             <CellComp
                 key={colnumber}
@@ -43,18 +41,16 @@ const RowComp = (props: { row: Cell[]; rownumber: number }) => (
                 colnum={colnumber}
             />
         ))}
-    </Row>
+    </div>
 )
 
-const GridComp = (props: { grid: Grid }) => {
-    return (
-        <Container>
-            {[...props.grid].map((row, index) => (
-                <RowComp key={index} row={row} rownumber={index} />
-            ))}
-        </Container>
-    )
-}
+const GridComp = (props: { grid: Grid }) => (
+    <div>
+        {[...props.grid].map((row, index) => (
+            <RowComp key={index} row={row} rownumber={index} />
+        ))}
+    </div>
+)
 
 export default function App() {
     const [current, send] = useMachine(appMachine)
