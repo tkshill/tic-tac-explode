@@ -13,21 +13,23 @@ const CellComp = (props: { cell: Cell; rownum: number; colnum: number }) => {
     const send = useContext(FSMeventContext)
     const style = { width: 'fill', height: 'fill' }
     return (
-        <Button
-            style={style}
-            key={props.colnum}
-            onClick={(_) =>
-                send({
-                    type: 'CLICKCELL',
-                    position: {
-                        row: props.rownum,
-                        column: props.colnum
-                    }
-                })
-            }
-        >
-            {display}
-        </Button>
+        <div>
+            <Button
+                style={style}
+                key={props.colnum}
+                onClick={(_) =>
+                    send({
+                        type: 'CLICKCELL',
+                        position: {
+                            row: props.rownum,
+                            column: props.colnum
+                        }
+                    })
+                }
+            >
+                {display}
+            </Button>
+        </div>
     )
 }
 
