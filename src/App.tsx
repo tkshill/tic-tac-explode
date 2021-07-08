@@ -2,7 +2,7 @@ import { appMachine } from './fsm'
 import React, { useContext } from 'react'
 import { useMachine } from '@xstate/react'
 import { Grid, Cell, createOpeningGrid } from './gamedata'
-import { Button } from 'react-bootstrap'
+import { Button, Container, Row, Col } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 const FSMeventContext = React.createContext<any>(undefined)
@@ -14,6 +14,7 @@ const CellComp = (props: { cell: Cell; rownum: number; colnum: number }) => {
     const style = { width: 'fill', height: 'fill' }
     return (
         <div>
+
             <Button
                 style={style}
                 key={props.colnum}
@@ -34,7 +35,7 @@ const CellComp = (props: { cell: Cell; rownum: number; colnum: number }) => {
 }
 
 const RowComp = (props: { row: Cell[]; rownumber: number }) => (
-    <>
+    <div>
         {[...props.row].map((cell, colnumber) => (
             <CellComp
                 key={colnumber}
@@ -43,7 +44,7 @@ const RowComp = (props: { row: Cell[]; rownumber: number }) => (
                 colnum={colnumber}
             />
         ))}
-    </>
+    </div>
 )
 
 const GridComp = (props: { grid: Grid }) => {
@@ -62,6 +63,33 @@ const GridComp = (props: { grid: Grid }) => {
         </div>
     )
 }
+
+
+const RowComp = (props: { row: Cell[]; rownumber: number }) => {
+    const row = [...props.row]
+
+    return (
+        <Row xs={row.length}>
+            {row.map((cell, colnumber) => (
+                <CellComp
+                    key={colnumber}
+                    cell={cell}
+                    rownum={props.rownumber}
+                    colnum={colnumber}
+                />
+            ))}
+        </Row>
+    )
+}
+
+const GridComp = (props: { grid: Grid }) => (
+    <div>
+        {[...props.grid].map((row, index) => (
+            <RowComp key={index} row={row} rownumber={index} />
+        ))}
+    </div>
+)
+
 
 export default function App() {
     const [current, send] = useMachine(appMachine)
