@@ -13,7 +13,8 @@ const CellComp = (props: { cell: Cell; rownum: number; colnum: number }) => {
     const send = useContext(FSMeventContext)
     const style = { width: 'fill', height: 'fill' }
     return (
-        <Col>
+        <div>
+
             <Button
                 style={style}
                 key={props.colnum}
@@ -29,9 +30,40 @@ const CellComp = (props: { cell: Cell; rownum: number; colnum: number }) => {
             >
                 {display}
             </Button>
-        </Col>
+        </div>
     )
 }
+
+const RowComp = (props: { row: Cell[]; rownumber: number }) => (
+    <div>
+        {[...props.row].map((cell, colnumber) => (
+            <CellComp
+                key={colnumber}
+                cell={cell}
+                rownum={props.rownumber}
+                colnum={colnumber}
+            />
+        ))}
+    </div>
+)
+
+const GridComp = (props: { grid: Grid }) => {
+    const rows = [...props.grid]
+
+    return (
+        <div
+            style={{
+                display: 'grid',
+                gridTemplateColumns: `repeat(${rows.length}, 1fr)`
+            }}
+        >
+            {rows.map((row, index) => (
+                <RowComp key={index} row={row} rownumber={index} />
+            ))}
+        </div>
+    )
+}
+
 
 const RowComp = (props: { row: Cell[]; rownumber: number }) => {
     const row = [...props.row]
@@ -51,12 +83,13 @@ const RowComp = (props: { row: Cell[]; rownumber: number }) => {
 }
 
 const GridComp = (props: { grid: Grid }) => (
-    <Container>
+    <div>
         {[...props.grid].map((row, index) => (
             <RowComp key={index} row={row} rownumber={index} />
         ))}
-    </Container>
+    </div>
 )
+
 
 export default function App() {
     const [current, send] = useMachine(appMachine)
