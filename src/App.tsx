@@ -32,7 +32,7 @@ const CellComp = (props: { cell: Cell; rownum: number; colnum: number }) => {
 }
 
 const RowComp = (props: { row: Cell[]; rownumber: number }) => (
-    <div>
+    <>
         {[...props.row].map((cell, colnumber) => (
             <CellComp
                 key={colnumber}
@@ -41,16 +41,25 @@ const RowComp = (props: { row: Cell[]; rownumber: number }) => (
                 colnum={colnumber}
             />
         ))}
-    </div>
+    </>
 )
 
-const GridComp = (props: { grid: Grid }) => (
-    <div>
-        {[...props.grid].map((row, index) => (
-            <RowComp key={index} row={row} rownumber={index} />
-        ))}
-    </div>
-)
+const GridComp = (props: { grid: Grid }) => {
+    const rows = [...props.grid]
+
+    return (
+        <div
+            style={{
+                display: 'grid',
+                gridTemplateColumns: `repeat(${rows.length}, 1fr)`
+            }}
+        >
+            {rows.map((row, index) => (
+                <RowComp key={index} row={row} rownumber={index} />
+            ))}
+        </div>
+    )
+}
 
 export default function App() {
     const [current, send] = useMachine(appMachine)
